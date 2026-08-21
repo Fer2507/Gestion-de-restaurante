@@ -1,0 +1,126 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Editar Pedido</title>
+<style>
+body { font-family: Arial; background-color: #fdf6f0; color: #333; padding: 20px; }
+h2 { text-align: center; color: #8b5e3c; }
+form { width: 60%; margin: 0 auto; background-color: #f5e8de; padding: 20px; border: 1px solid #8b5e3c; border-radius: 8px; }
+label { display: block; margin-top: 10px; color: #8b5e3c; }
+select, input[type="number"], input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #8b5e3c; border-radius: 4px; }
+button { margin-top: 15px; padding: 8px 16px; background-color: #8b5e3c; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background-color: #6f482f; }
+.total { margin-top: 10px; font-weight: bold; color: #6f482f; }
+</style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+<div class="container">
+<h2>Editar Pedido</h2>
+
+<form th:action="@{/pedidos/actualizar}" th:object="${pedido}" method="post">
+
+    <input type="hidden" th:field="*{idpedido}" />
+
+    <!-- Mostrar ID Reserva -->
+    <label>ID Reserva:</label>
+    <p th:text="${pedido.reserva != null} ? ${pedido.reserva.idReserva} : 'Sin reserva'"></p>
+    <input type="hidden" name="reserva.idReserva" value="0"/>
+
+    <!-- Empleado -->
+    <label>Empleado que atiende:</label>
+    <select id="empleadoSelect" required>
+        <option value="" disabled>Seleccione un empleado</option>
+        <option th:each="empleado : ${empleados}" 
+                th:value="${empleado.idEmpleado}" 
+                th:text="${empleado.nombreCompleto + ' (' + empleado.puesto + ')'}"
+                th:selected="${pedido.atenciones != null and !pedido.atenciones.isEmpty() and pedido.atenciones[0].empleado.idEmpleado == empleado.idEmpleado}">
+        </option>
+    </select>
+    <input type="hidden" name="idEmpleado" id="idEmpleadoHidden"/>
+
+    <!-- Cliente (solo lectura) -->
+    <label>Cliente:</label>
+    <select disabled>
+        <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombre}" th:selected="${c.id==pedido.cliente.id}"></option>
+    </select>
+    <input type="hidden" th:field="*{cliente.id}"/>
+
+    <!-- Total -->
+    <label>Total:</label>
+    <input type="text" th:field="*{total}" id="totalInput" readonly/>
+
+    <!-- Productos -->
+    <h3>Productos del Pedido</h3>
+    <table>
+        <thead>
+            <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="detalleTabla">
+            <tr th:each="detalle, stat : *{detalles}">
+                <td>
+                    <input type="hidden" th:field="*{detalles[__${stat.index}__].producto.idProducto}"/>
+                    <span th:text="${detalle.producto.nombre}"></span>
+                </td>
+                <td><input type="number" th:field="*{detalles[__${stat.index}__].cantidad}" min="1" oninput="recalcularSubtotal(this)" style="width:70px; text-align:center;"></td>
+                <td><input type="text" th:field="*{detalles[__${stat.index}__].precioUnitario}" readonly></td>
+                <td><input type="text" th:field="*{detalles[__${stat.index}__].subtotal}" readonly></td>
+                <td><button type="button" onclick="eliminarDetalle(this)">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Agregar Producto -->
+    <h3>Agregar Producto</h3>
+    <select id="productoSelect">
+        <option value="">-- Seleccione un Producto --</option>
+        <option th:each="p : ${productos}" th:value="${p.idProducto}" th:data-precio="${p.precio}" th:text="${p.nombre}"></option>
+    </select>
+    <input type="number" id="cantidadInput" min="1" value="1">
+    <button type="button" onclick="agregarDetalle()">Agregar Producto</button>
+
+    <div class="total">
+        Total: $<span id="totalDisplay">0.00</span>
+    </div>
+
+    <div style="margin-top:20px; text-align:center;">
+        <a th:href="@{/pedidos/lista}"><button type="button">Cancelar</button></a>
+        <button type="submit">Guardar Cambios</button>
+    </div>
+</form>
+</div>
+
+<script>
+// Empleado
+document.querySelector('form').addEventListener('submit', function() {
+    document.getElementById('idEmpleadoHidden').value = document.getElementById('empleadoSelect').value;
+});
+
+// Productos dinámicos
+function agregarDetalle() {
+    const select = document.getElementById('productoSelect');
+    const cant = parseInt(document.getElementById('cantidadInput').value);
+    if(!select.value || cant<=0) { alert('Seleccione producto y cantidad'); return; }
+    const tabla = document.getElementById('detalleTabla');
+    const index = tabla.querySelectorAll('tr').length;
+    const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
+    const subtotal = (precio*cant).toFixed(2);
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+        <td><input type="hidden" name="detalles[${index}].producto.idProducto" value="${select.value}"><span>${select.options[select.selectedIndex].text}</span></td>
+        <td><input type="number" name="detalles[${index}].cantidad" value="${cant}" min="1" oninput="recalcularSubtotal(this)" style="width:70px; text-align:center;"></td>
+        <td><input type="text" name="detalles[${index}].precioUnitario" value="${precio.toFixed(2)}" readonly></td>
+        <td><input type="text" name="detalles[${index}].subtotal" value="${subtotal}" readonly></td>
+        <td><button type="button" onclick="eliminarDetalle(this)">X</button></td>`;
+    tabla.appendChild(fila);
+    actualizarTotal();
+    select.value=''; document.getElementById('cantidadInput').value=1;
+}
+
+function eliminarDetalle(btn){ btn.closest('tr').remove(); actualizarIndices(); actualizarTotal(); }
+function actualizarIndices(){ const filas=document.querySelectorAll('#detalleTabla tr'); filas.forEach((f,i)=>{f.querySelectorAll('input[name]').forEach(inp=>{inp.name=inp.name.replace(/detalles\[\d+\]/,`detalles[${i}]`);});}); }
+function recalcularSubtotal(input){ const fila=input.closest('tr'); const cant=parseInt(input.value)||0; const precio=parseFloat(fila.querySelector('input[name$=".precioUnitario"]').value)||0; fila.querySelector('input[name$=".subtotal"]').value=(cant*precio).toFixed(2); actualizarTotal(); }
+function actualizarTotal(){ let total=0; document.querySelectorAll('input[name$=".subtotal"]').forEach(sub=>{total+=parseFloat(sub.value)||0;}); document.getElementById('totalInput').value=total.toFixed(2); document.getElementById('totalDisplay').innerText=total.toFixed(2);}
+</script>
+</html>

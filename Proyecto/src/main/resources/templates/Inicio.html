@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Inicio</title>
+<style>
+    /* ======= CONFIGURACIÓN GENERAL ======= */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f7ede2;
+        color: #4b2e05;
+        margin: 0;
+        padding: 40px;
+    }
+
+    h1 {
+        color: #8b5e3c;
+        font-style: italic;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* ======= LAYOUT PRINCIPAL (PRODUCTOS + PANEL DERECHA) ======= */
+    .main-container {
+        display: flex;
+        justify-content: space-between; /* Panel a la derecha */
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    /* ======= CONTENEDOR DE TARJETAS DE PRODUCTO ======= */
+    .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Tarjetas más pequeñas */
+        gap: 20px;
+        flex: 1;
+    }
+
+    /* ======= TARJETAS ======= */
+    .card {
+        background-color: #fff8f0;
+        border-radius: 10px;
+        box-shadow: 0 0 8px rgba(90, 56, 28, 0.15);
+        padding: 12px;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 0 15px rgba(90, 56, 28, 0.25);
+    }
+
+    .card img {
+        width: 100%;
+        height: 130px; /* más pequeñas */
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+
+    .card h3 {
+        color: #6f4e37;
+        margin: 6px 0 3px 0;
+        font-size: 16px;
+    }
+
+    .card p {
+        margin: 3px 0;
+        color: #4b2e05;
+        font-size: 13px;
+    }
+
+    .card .precio {
+        font-weight: bold;
+        color: #8b4513;
+        margin-top: 4px;
+    }
+
+    .btn-detalle {
+        display: inline-block;
+        background-color: #a47148;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 13px;
+        margin-top: 8px;
+        transition: background-color 0.3s;
+    }
+
+    .btn-detalle:hover {
+        background-color: #7b4f2c;
+    }
+
+    /* ======= PANEL DE BÚSQUEDA (DERECHA) ======= */
+    .search-container {
+        width: 260px;
+        background-color: #f5e8de;
+        border-radius: 10px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.15);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        height: fit-content;
+    }
+
+    .search-container h2 {
+        text-align: center;
+        color: #6f4e37;
+        margin-bottom: 10px;
+    }
+
+    .search-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .search-form input {
+        padding: 6px;
+        border: 1px solid #c4a484;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .search-form button {
+        background-color: #a47148;
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .search-form button:hover {
+        background-color: #7b4f2c;
+    }
+
+    /* ======= BOTÓN “VER TODOS” ======= */
+    .footer-btns {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+    .footer-btns a {
+        background-color: #a47148;
+        color: #fff;
+        border-radius: 5px;
+        padding: 8px 14px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .footer-btns a:hover {
+        background-color: #7b4f2c;
+    }
+
+    /* ======= MENSAJE VACÍO ======= */
+    .empty-message {
+        text-align: center;
+        color: #6f4e37;
+        font-size: 16px;
+        margin-top: 40px;
+    }
+</style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+
+<h1>Inicio</h1>
+
+<div class="main-container">
+    <!-- SECCIÓN IZQUIERDA: TARJETAS -->
+    <div style="flex: 1;">
+        <!-- MENSAJE SI NO HAY RESULTADOS -->
+        <div th:if="${#lists.isEmpty(productos)}" class="empty-message">
+            <h2><strong>No se encontraron productos para esta búsqueda.</strong></h2>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div class="card-container" th:if="${!#lists.isEmpty(productos)}">
+            <div class="card" th:each="producto : ${productos}">
+                <img th:src="@{'/productos/' + ${producto.nombreFoto}}" alt="Imagen no disponible">
+                <h3 th:text="${producto.nombre}"></h3>
+                <p th:text="'Tipo: ' + ${producto.tipo}"></p>
+                <p th:text="'Descripción: ' + ${producto.descripcion}"></p>
+                <p class="precio" th:text="'Precio: $' + ${producto.precio}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DERECHO: BÚSQUEDAS -->
+    <div class="search-container">
+        <h2>Buscar productos</h2>
+
+        <form th:action="@{/busquedaPro/porTipoPro}" method="post" class="search-form">
+            <input type="hidden" name="origen" value="inicio" required>
+            <input type="text" name="tipo" placeholder="Buscar por tipo" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <form th:action="@{/busquedaPro/entrePreciosPro}" method="post" class="search-form">
+            <input type="number" step="0.01" name="min" placeholder="Precio mínimo" required>
+            <input type="number" step="0.01" name="max" placeholder="Precio máximo" required>
+            <input type="hidden" name="origen" value="inicio">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <form th:action="@{/busquedaPro/porTipoYPrecioPro}" method="post" class="search-form">
+		    <input type="text" name="tipo" placeholder="Tipo (Ej. Bebida)" required>
+		    <input type="number" step="0.01" name="precioMin" placeholder="Precio mínimo" required>
+		    <input type="number" step="0.01" name="precioMax" placeholder="Precio máximo" required>
+		    <input type="hidden" name="origen" value="inicio">
+		    <button type="submit">Buscar</button>
+		</form>
+        <!-- BOTÓN PARA VER TODOS -->
+        <div class="footer-btns">
+            <a th:href="@{/}">Ver todos los productos</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

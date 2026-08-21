@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Usuarios</title>
+
+<style>
+    body {
+        background-color: #fdf6f0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    h2 { text-align: center; color: #8b5e3c; }
+    table {
+        width: 80%;
+        margin: 0 auto;
+        background-color: #f5e8de;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #8b5e3c;
+        padding: 10px;
+        text-align: center;
+    }
+    a.button {
+        padding: 6px 12px;
+        background-color: #8b5e3c;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    a.button:hover { background-color: #6f482f; }
+    .container { text-align: center; margin-bottom: 20px; }
+</style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+
+<h2>Lista de Usuarios</h2>
+
+<div class="container">
+    <a class="button" href="/usuarios/nuevo">Registrar Usuario</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Usuario</th>
+        <th>Perfil</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${usuarios}">
+        <td th:text="${u.idUsuario}"></td>
+        <td th:text="${u.nombre}"></td>
+        <td th:text="${u.email}"></td>
+        <td th:text="${u.username}"></td>
+        <td>
+         <span th:each="p, stat : ${u.perfiles}"
+              th:text="${p.perfil} + ${stat.last ? '' : ', '}"
+        ></span></td>
+
+        <td>
+            <a class="button" th:href="@{'/usuarios/ver/' + ${u.idUsuario}}">Ver</a>
+            <a class="button" th:href="@{'/usuarios/editar/' + ${u.idUsuario}}">Editar</a>
+            <a class="button" th:href="@{'/usuarios/eliminar/' + ${u.idUsuario}}">Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

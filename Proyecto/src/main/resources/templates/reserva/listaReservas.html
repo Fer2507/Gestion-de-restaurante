@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Reservas</title>
+<style>
+/* ======= CONTENEDOR PRINCIPAL ======= */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 25px;
+}
+
+/* ======= BODY Y TITULOS ======= */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fdf6f0;
+    color: #333;
+    padding: 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #8b5e3c;
+    margin-bottom: 20px;
+}
+
+/* ======= TABLAS ======= */
+.main-container > div:first-child {
+    flex: 3 1 0%;
+    min-width: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f5e8de;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #8b5e3c;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #c49b7c;
+    color: #fff;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) { background-color: #f8e9de; }
+tbody tr:hover { background-color: #f2d9b5; }
+
+/* ======= BOTONES ======= */
+a.button, button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #8b5e3c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+a.button:hover, button:hover { background-color: #6f482f; }
+.pendiente { background-color: #a52a2a; }
+.pendiente:hover { background-color: #7f1f1f; }
+.center { text-align: center; margin-bottom: 20px; }
+
+/* ======= PANEL DERECHO (ACCIONES Y BÚSQUEDA) ======= */
+.search-container {
+    flex: 1 1;
+    background-color: #f5e8de;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: fit-content;
+}
+
+.search-container h2 {
+    text-align: center;
+    color: #6f4e37;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.search-form input, .search-form select {
+    padding: 6px;
+    border: 1px solid #c4a484;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.search-form button {
+    background-color: #a47148;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-form button:hover {
+    background-color: #7b4f2c;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 900px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .main-container > div:first-child,
+    .search-container {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .search-container {
+        order: -1;
+        margin-bottom: 20px;
+    }
+}
+</style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+
+<script th:if="${mensaje}">  alert('[[${mensaje}]]'); </script>
+<h1>Lista de Reservas</h1>
+
+<div class="main-container">
+
+    <!-- TABLAS DE RESERVAS -->
+    <div>
+        <!-- Mensajes -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+		<!-- Confirmadas -->
+        <h2>Reservas Confirmadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mesa</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estatus</th>
+                    <th>Pedidos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${confirmadas}">
+                    <td th:text="${r.idReserva}"></td>
+                    <td th:text="${r.mesa.idMesa}"></td>
+                    <td th:text="${r.cliente.nombre}"></td>
+                    <td th:text="${#temporals.format(r.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${r.estatus}"></td>
+                    <td>
+                        <ul>
+                            <li th:each="p : ${r.pedidos}" th:text="${'Pedido #' + p.idpedido }"></li>
+                        </ul>
+                    </td>
+                    <td>
+                        <form th:action="@{/reserva/pendiente/{id}(id=${r.idReserva})}" method="post" style="display:inline;">
+                          <button type="submit" class="button pendiente">Pendiente</button>
+                        </form>
+                        <a th:href="@{/pedidos/nuevo/{idReserva}(idReserva=${r.idReserva})}" class="button">Crear Pedido</a>
+                        <a th:href="@{/reserva/detalle/{id}(id=${r.idReserva})}" class="button">Detalles</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+                <!-- Pendientes -->
+        <h2>Reservas Pendientes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mesa</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${pendientes}">
+                    <td th:text="${r.idReserva}"></td>
+                    <td th:text="${r.mesa.idMesa}"></td>
+                    <td th:text="${r.cliente.nombre}"></td>
+                    <td th:text="${#temporals.format(r.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${r.estatus}"></td>
+                    <td>
+                        <form th:action="@{/reserva/confirmar/{id}(id=${r.idReserva})}" method="post" style="display:inline;">
+                          <button type="submit" class="button">Confirmar</button>
+                        </form>
+                        <a th:href="@{/reserva/editar/{id}(id=${r.idReserva})}" class="button">Modificar</a>
+                        <a th:href="@{/reserva/detalle/{id}(id=${r.idReserva})}" class="button">Detalles</a>
+                        <form th:action="@{/reserva/cancelar/{id}(id=${r.idReserva})}" method="post" style="display:inline;">
+                          <button type="submit" class="button pendiente">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div class="search-container">
+        <h2>Buscar Reservas</h2>
+
+        <!-- Fecha exacta -->
+        <form th:action="@{/buscar/reserva/fechaExacta}" method="post" class="search-form">
+            <label>Fecha exacta:</label>
+            <input type="date" name="fecha" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <!-- Rango de fechas -->
+        <form th:action="@{/buscar/reserva/rango}" method="post" class="search-form">
+            <label>Desde:</label>
+            <input type="date" name="fechaInicio" required>
+            <label>Hasta:</label>
+            <input type="date" name="fechaFin" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <div class="center">
+            <a th:href="@{/reserva/lista}" class="button">Ver todas las reservas</a>
+            <a th:href="@{/home}" class="button">Volver</a>
+            <a th:href="@{/reserva/nueva}" class="button">Nueva Reserva</a>
+        </div>
+    </div>
+
+</div>
+
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

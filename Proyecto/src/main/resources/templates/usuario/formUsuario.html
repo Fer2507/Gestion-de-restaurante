@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:text="${usuario.idUsuario == null ? 'Registrar Usuario' : 'Editar Usuario'}"></title>
+ <style>
+        body { font-family: Arial, sans-serif; background-color: #fdf6f0; color: #333; padding: 20px; }
+        h2 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 60%; margin: 0 auto; background-color: #f5e8de;
+            padding: 20px; border: 1px solid #8b5e3c; border-radius: 8px;
+        }
+        label { display: block; margin-top: 10px; color: #8b5e3c; }
+        select, input[type="number"], input[type="text"] {
+            width: 100%; padding: 8px; margin-top: 5px;
+            border: 1px solid #8b5e3c; border-radius: 4px;
+        }
+        button { margin-top: 15px; padding: 8px 16px; background-color: #8b5e3c; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #6f482f; }
+        .total { margin-top: 10px; font-weight: bold; color: #6f482f; }
+    </style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+<h2 th:text="${usuario.idUsuario == null ? 'Registro de Usuario' : 'Editar Usuario'}"></h2>
+
+<form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+    <input type="hidden" th:field="*{idUsuario}">
+
+    <label>Nombre</label>
+    <input type="text" th:field="*{nombre}" required>
+
+    <label>Email</label>
+    <input type="email" th:field="*{email}" required>
+
+    <label>Usuario</label>
+    <input type="text" th:field="*{username}" required>
+
+    <label>Contraseña</label>
+    <input type="password" th:field="*{password}" 
+           th:placeholder="${usuario.idUsuario != null ? 'Dejar en blanco si no cambia' : ''}">
+
+    <label>Estatus</label>
+    <input type="number" th:field="*{estatus}" placeholder="1 = Activo, 0 = Inactivo">
+
+    <input type="date" th:field="*{fechaRegistro}">
+
+    <!-- El valor debe ser siempre el id del perfil, no el nombre -->
+    <label>Perfiles:</label>
+    <select th:name="perfilesSeleccionados" multiple size="5">
+        <option th:each="perfil : ${perfiles}" 
+                th:value="${perfil.idPerfil}" 
+                th:text="${perfil.perfil}">
+        </option>
+    </select>
+
+    <button type="submit">Guardar</button>
+    <a th:href="@{/usuarios/lista}"><button type="button">Cancelar</button></a>
+</form>
+
+</body>
+<div th:replace="fragments/footer :: footer"></div>
+</html>

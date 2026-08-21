@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+
+<body>
+<!-- Header completo -->
+<div th:fragment="header" style="padding:10px; background:linear-gradient(90deg,#cfa178,#d4a67e,#e0b68f); font-family:'Segoe UI', sans-serif;">
+
+    <!-- Fila superior: Usuario a la izquierda, título al centro, logout a la derecha -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        
+        <!-- Usuario y roles -->
+        <div style="color:#fff; text-align:left;">
+            <div>Usuario: <span sec:authentication="name">Usuario</span></div>
+            <div>Roles: 
+                <span th:each="role : ${#authentication.authorities}" 
+                      th:text="${role.authority}" 
+                      style="margin-right:5px; font-weight:bold;"></span>
+            </div>
+        </div>
+
+        <!-- Título centrado -->
+        <h1 style="color:#fff; font-size:22px; margin:0;">Restaurante</h1>
+
+        <!-- Botones a la derecha -->
+        <div style="text-align:right;">
+            <!-- Si NO está logeado → mostrar INICIAR SESIÓN -->
+		<a sec:authorize="isAnonymous()"
+		   th:href="@{/login}"
+		   style="display:inline-block; margin:2px; padding:6px 12px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">
+		   Iniciar sesión
+		</a>
+		
+		<!-- Si está logeado → mostrar SALIR -->
+		<form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;"></form>
+		
+		<a sec:authorize="isAuthenticated()"
+	   href="#"
+	   onclick="document.getElementById('logoutForm').submit(); return false;"
+	   style="display:inline-block; margin:2px; padding:6px 12px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">
+	   Salir
+	</a>
+
+
+            <a th:href="@{/}" 
+               style="display:inline-block; margin:2px; padding:6px 12px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Inicio</a>
+        </div>
+    </div>
+
+    <!-- Fila inferior: Cards de navegación -->
+    <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+        <!-- Productos -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Productos</div>
+            <a th:href="@{/producto/listadopro}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/producto/alta}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+        </div>
+
+        <!-- Mesas -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Mesas</div>
+            <a th:href="@{/mesa}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/mesa/nueva}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nueva</a>
+        </div>
+
+        <!-- Empleados -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Empleados</div>
+            <a th:href="@{/empleado}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/empleado/nuevo}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+        </div>
+
+        <!-- Pedidos -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Pedidos</div>
+            <a th:href="@{/pedidos/lista}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/pedidos/crear}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+            <a th:href="@{/pedidos/mis-pedidos}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Mis Pedidos Cliente</a>
+            <a th:href="@{/pedidos/mis-pedidos-empleado}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Mis Pedidos Empleado</a>
+        </div>
+
+        <!-- Clientes -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Clientes</div>
+            <a th:href="@{/clientes/listadocli}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/clientes/crear}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+            <a th:href="@{/busquedas}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Buscar</a>
+        </div>
+
+        <!-- Reservas -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Reservas</div>
+            <a th:href="@{/reserva/lista}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/reserva/nueva}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nueva</a>
+            <a th:href="@{/reserva/mis-reservas}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Mis Reservaciones</a>
+        </div>
+
+        <!-- Usuarios -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Usuarios</div>
+            <a th:href="@{/usuarios/lista}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/usuarios/nuevo}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+        </div>
+
+        <!-- Perfil -->
+        <div style="background:#fff7ed; color:#5c3a2a; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2); padding:8px 10px; text-align:center; min-width:80px; flex:1 0 120px;">
+            <div style="font-size:14px; font-weight:bold; margin-bottom:6px;">Perfil</div>
+            <a th:href="@{/perfiles/lista}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Lista</a>
+            <a th:href="@{/perfiles/nuevo}" style="display:inline-block; margin:2px; padding:3px 6px; background:#b6875a; color:#fff7ed; text-decoration:none; border-radius:6px; font-weight:bold; font-size:13px;">Nuevo</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

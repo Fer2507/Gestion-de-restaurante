@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${mesa.idMesa == null} ? 'Nueva Mesa' : 'Editar Mesa'">Mesa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6f0;
+            color: #333;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #f5e8de;
+            padding: 20px;
+            border: 1px solid #8b5e3c;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #8b5e3c;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #8b5e3c;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #8b5e3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #6f482f; }
+        a { text-decoration: none; color: #8b5e3c; margin-left: 10px; }
+	
+    </style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+    <h1 th:text="${mesa.idMesa == null} ? 'Nueva Mesa' : 'Editar Mesa'"></h1>
+    <form th:action="@{${mesa.idMesa == null} ? '/mesa/guardar' : '/mesa/actualizar'}" th:object="${mesa}" method="post">
+        <input type="hidden" th:field="*{idMesa}" />
+        <label>Capacidad</label>
+        <input type="number" th:field="*{capacidad}" required />
+        <label>Ubicación</label>
+        <input type="text" th:field="*{ubicacion}" required />
+        <button type="submit">Guardar</button>
+        <a href="/mesa">Cancelar</a>
+    </form>
+</body>
+<div th:replace="fragments/footer :: footer"></div>
+</html>

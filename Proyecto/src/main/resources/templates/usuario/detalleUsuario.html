@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Detalle Usuario</title>
+
+<style>
+    body {
+        background-color: #fdf6f0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    h2 { text-align: center; color: #8b5e3c; }
+    .card {
+        width: 40%;
+        margin: 0 auto;
+        background-color: #f5e8de;
+        padding: 20px;
+        border: 1px solid #8b5e3c;
+        border-radius: 8px;
+    }
+    p { color: #5a3b23; }
+    a { color: #8b5e3c; text-decoration: none; }
+</style>
+</head>
+
+<body>
+
+<h2>Detalle del Usuario</h2>
+
+<div class="card">
+    <p><strong>ID:</strong> <span th:text="${usuario.idUsuario}"></span></p>
+    <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+    <p><strong>Usuario:</strong> <span th:text="${usuario.username}"></span></p>
+
+    <p><strong>Perfiles:</strong>
+        <span th:each="p, stat : ${usuario.perfiles}">
+            <span th:text="${p.perfil}"></span>
+            <span th:if="${!stat.last}">, </span>
+        </span>
+    </p>
+
+    <p><strong>Estatus:</strong> <span th:text="${usuario.estatus}"></span></p>
+    <p><strong>Registro:</strong> <span th:text="${usuario.fechaRegistro}"></span></p>
+    <p><a th:href="@{/usuarios/lista}">Regresar</a></p>
+</div>
+
+</body>
+<div th:replace="fragments/footer :: footer"></div>
+</html>

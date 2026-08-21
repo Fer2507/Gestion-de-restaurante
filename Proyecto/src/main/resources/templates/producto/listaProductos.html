@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Productos</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fdf6f0; /* fondo café claro */
+        color: #333;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #8b5e3c; /* café oscuro */
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+
+    /* Contenedor principal */
+    .main-container {
+        display: flex;
+        gap: 25px;
+        align-items: flex-start;
+    }
+
+    /* Tabla */
+    .table-container {
+        flex: 3 1 0%;
+        min-width: 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #f5e8de;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        border: 1px solid #8b5e3c;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    th {
+        background-color: #c49b7c;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f8e9de;
+    }
+
+    tbody tr:hover {
+        background-color: #f2d9b5;
+    }
+
+    td img {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    }
+
+    /* Botones */
+    a.button {
+        display: inline-block;
+        padding: 6px 12px;
+        background-color: #8b5e3c;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 4px 0;
+        font-size: 13px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+        background-color: #6f482f;
+    }
+
+    td a.delete {
+        background-color: #a52a2a;
+    }
+
+    td a.delete:hover {
+        background-color: #7f1f1f;
+    }
+
+    /* Panel derecho: busquedas */
+    .search-container {
+        flex: 1 1 ; /* ancho reducido */
+	    background-color: #f5e8de;
+	    border-radius: 10px;
+	    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+	    padding: 20px;
+	    display: flex;
+	    flex-direction: column;
+	    gap: 15px;
+	    height: fit-content;
+    }
+
+    .search-container h2 {
+        text-align: center;
+        color: #6f4e37;
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .search-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .search-form input {
+        padding: 6px;
+        border: 1px solid #c4a484;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .search-form button {
+        background-color: #a47148;
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .search-form button:hover {
+        background-color: #7b4f2c;
+    }
+
+    .search-container a.button {
+        background-color: #a47148;
+        text-align: center;
+    }
+
+    .search-container a.button:hover {
+        background-color: #7b4f2c;
+    }
+
+    /* Botones inferiores */
+    .footer-btns {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .footer-btns a {
+        display: inline-block;
+        background-color: #a47148;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        margin: 4px 0;
+        text-align: center;
+        transition: background-color 0.3s;
+    }
+
+    .footer-btns a:hover {
+        background-color: #7b4f2c;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .main-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .table-container,
+        .search-container {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        .search-container {
+            order: -1; /* mover arriba en móvil */
+            margin-bottom: 20px;
+        }
+    }
+</style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+<h1>Lista de Productos</h1>
+<div class="main-container">
+    <!-- Tabla -->
+    <div class="table-container">
+        <div th:if="${#lists.isEmpty(productos)}" style="text-align:center; margin-bottom:20px;">
+            <h2><strong>No se encontraron productos para esta búsqueda.</strong></h2>
+        </div>
+        <table th:if="${!#lists.isEmpty(productos)}">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="producto : ${productos}">
+                    <td th:text="${producto.nombre}"></td>
+                    <td th:text="${producto.tipo}"></td>
+                    <td th:text="${producto.descripcion}"></td>
+                    <td th:text="${producto.precio != null ? '$' + producto.precio : 'N/A'}"></td>
+                    <td>
+                        <img th:src="@{'/productos/' + ${producto.nombreFoto}}" alt="no_imagen.jpg"/>
+                    </td>
+                    <td>
+                        <a th:href="@{/producto/editar/{id}(id=${producto.idProducto})}" class="button">Modificar</a>
+                        <a th:href="@{/producto/ver/{id}(id=${producto.idProducto}, from='lista')}" class="button">Detalles</a>
+                        <a th:href="@{/producto/eliminar/{id}(id=${producto.idProducto})}" 
+                           onclick="return confirm('¿Estás seguro de eliminar este producto?')" class="button delete">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Panel de búsqueda -->
+    <div class="search-container">
+        <h2>Buscar productos</h2>
+
+        <form th:action="@{/busquedaPro/porTipoPro}" method="post" class="search-form">
+            <input type="text" name="tipo" placeholder="Buscar por tipo">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <form th:action="@{/busquedaPro/porNombrePro}" method="post" class="search-form">
+            <input type="text" name="nombre" placeholder="Nombre exacto">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <form th:action="@{/busquedaPro/porNombreContienePro}" method="post" class="search-form">
+            <input type="text" name="cadena" placeholder="Nombre que contenga">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <a th:href="@{/producto/listadopro}" class="button">Ver todos</a>
+
+        <div class="footer-btns">
+            <a th:href="@{/producto/alta}">Agregar Producto</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

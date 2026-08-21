@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Empleado</title>
+    <style>
+     body {
+        font-family: Arial, sans-serif;
+        background-color: #fdf6f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .card {
+        background-color: #f5e8de;
+        border: 1px solid #8b5e3c;
+        border-radius: 10px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: left;
+        width: 350px;
+    }
+    .card h2 {
+        color: #8b5e3c;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .card h3 {
+        margin: 8px 0;
+        color: #5c3d2e;
+    }
+    .card a button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        background-color: #8b5e3c;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .card a button:hover {
+        background-color: #6f482f;
+    }
+    </style>
+</head>
+<body>
+   <div class="card">
+   <h1>Detalle del Empleado</h1>
+    <h3 th:text="'Nombre Completo: ' + ${empleado.nombreCompleto}"></h3>
+	<h3 th:text="'Puesto: ' + ${empleado.puesto}"></h3>
+	<h3 th:text="'Clave: ' + ${empleado.clave}"></h3>
+
+    <a th:href="@{/empleado}"><button type="button">Volver</button></a>
+	</div>
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

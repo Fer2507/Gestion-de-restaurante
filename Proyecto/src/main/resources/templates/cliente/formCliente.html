@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cliente</title>
+       <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6f0;
+            color: #333;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #f5e8de;
+            padding: 20px;
+            border: 1px solid #8b5e3c;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #8b5e3c;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #8b5e3c;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #8b5e3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #6f482f; }
+        a { text-decoration: none; color: #8b5e3c; margin-left: 10px; }
+        /* === Estilo para los SELECT === */
+	select {
+	    width: 100%;
+	    padding: 8px 12px;
+	    border: 1px solid #b08968;         /* borde café suave */
+	    border-radius: 6px;
+	    background-color: #fffaf3;         /* beige muy claro */
+	    color: #3e2723;                    /* texto café oscuro */
+	    font-size: 14px;
+	    font-family: Arial, sans-serif;
+	    appearance: none;                  /* elimina estilo por defecto */
+	    background-image: linear-gradient(45deg, transparent 50%, #8b5e3c 50%),
+	                      linear-gradient(135deg, #8b5e3c 50%, transparent 50%);
+	    background-position: calc(100% - 15px) calc(50% - 2px), calc(100% - 10px) calc(50% - 2px);
+	    background-size: 5px 5px, 5px 5px;
+	    background-repeat: no-repeat;
+	    transition: all 0.3s ease;
+		cursor: pointer;
+	}
+	
+	/* Hover y focus */
+	select:hover {
+	    border-color: #8b5e3c;
+	    background-color: #fff3e0;
+	}
+	
+	select:focus {
+	    outline: none;
+	    border-color: #6d4c41;
+	    box-shadow: 0 0 5px rgba(139, 94, 60, 0.4);
+	}
+	
+	/* Opciones dentro del desplegable */
+	option {
+	    background-color: #fffaf3;
+	    color: #3e2723;
+	}
+	        
+	 .foto-actual {
+            display: block;
+            width: 100px;          /* tamaño reducido */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 2px solid #8b5e3c;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+
+<h2 th:text="${cliente.id} != null ? 'Editar Cliente' : 'Registrar Nuevo Cliente'"></h2>
+
+<form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}" />
+
+    <!-- Mensaje de error -->
+    <div th:if="${msg}" class="error-msg" th:text="${msg}"></div>
+
+    <!-- Nombre -->
+    <label for="nombre">Nombre del Cliente:</label>
+    <input type="text" id="nombre" th:field="*{nombre}" required>
+
+    <!-- Apellidos -->
+    <label for="apellidos">Apellidos del Cliente:</label>
+    <input type="text" id="apellidos" th:field="*{apellidos}" required>
+
+    <!-- Email -->
+    <label for="email">Email:</label>
+    <input type="email" id="email" th:field="*{email}" required>
+    
+    <!-- Clave o Contraseña -->
+	<label for="clave">Clave:</label>
+	<input type="text" id="clave" th:field="*{clave}" required>
+
+
+
+    <!-- Crédito -->
+    <label for="credito">Crédito:</label>
+    <input type="number" step="0.01" id="credito" th:field="*{credito}" required>
+
+    <!-- Teléfono -->
+    <label for="telefono">Teléfono:</label>
+    <input type="text" id="telefono" th:field="*{telefono}" required>
+
+    <!-- Destacado -->
+    <label for="destacado">Cliente Destacado:</label>
+    <select id="destacado" th:field="*{destacado}" required>
+        <option value="">--Seleccionar--</option>
+        <option value="1" th:selected="${cliente.destacado == 1}">Sí</option>
+        <option value="0" th:selected="${cliente.destacado == 0}">No</option>
+    </select>
+
+    <!-- Foto actual (solo al editar) -->
+    <div th:if="${cliente.nombreFoto != null}">
+        <label>Foto Actual:</label>
+        <img th:src="@{/imagen/cliente/{foto}(foto=${cliente.nombreFoto})}" alt="Foto Cliente" class="foto-actual"/>
+    </div>
+
+    <!-- Subir nueva foto -->
+    <label for="fotocliente">Subir Foto Nueva:</label>
+    <input type="file" id="fotocliente" name="fotocliente">
+    
+    <div class="button-group">
+    <a th:href="@{/clientes/listadocli}">
+        	<button type="button">Cancelar</button>
+     </a>
+     <button type="submit">Guardar Cliente</button>
+    </div>
+   
+</form>
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>
