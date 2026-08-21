@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Búsquedas de Productos</title>
+    <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        background-color: #fdf6f0; /* beige claro */
+        color: #3e2723; /* café oscuro */
+    }
+
+    h2 { 
+        text-align: center; 
+        padding: 20px 0;
+        color: #5c4033; /* tono café medio */
+        font-style: italic; 
+    }
+
+    /* Contenedor principal de los formularios */
+    .search-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin: 0 auto 20px;
+        max-width: 1000px;
+    }
+
+    .search-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: #fff3e0; /* beige */
+        padding: 15px;
+        border-radius: 10px;
+        flex: 1 1 400px;
+        border: 1px solid #d7b899;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 6px 10px;
+        border-radius: 5px;
+        border: 1px solid #b08968;
+        background-color: #fffaf3;
+    }
+
+    button {
+        padding: 10px 22px;
+        background: #8b5e3c; /* café principal */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+        background: #6d4c41; /* café más oscuro */
+        transform: scale(1.05);
+    }
+
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    table { 
+        width: 90%; 
+        margin: 0 auto 30px; 
+        border-collapse: collapse; 
+        background: #ffffff; 
+        color: #3e2723; 
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    th, td { 
+        border: 1px solid #d7ccc8; 
+        padding: 8px; 
+        text-align: center; 
+    }
+
+    th { 
+        background: #a1887f; /* café claro */
+        color: white; 
+    }
+
+    tbody tr:nth-child(even) { 
+        background-color: #f7ede2; 
+    }
+
+    .no-results { 
+        text-align: center; 
+        color: #d84315; /* tono terracota */
+        font-weight: bold; 
+    }
+</style>
+
+</head>
+<body>
+
+<h2>Búsquedas de Productos</h2>
+
+<div class="search-container">
+    <form th:action="@{/busquedaPro/porNombrePro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="text" name="nombre" placeholder="Buscar por nombre exacto">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/porNombreContienePro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="text" name="cadena" placeholder="Buscar nombre que contenga">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/porTipoPro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="text" name="tipo" placeholder="Buscar por tipo">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/porDescripcionPro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="text" name="texto" placeholder="Buscar en descripción">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/entrePreciosPro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="number" step="0.01" name="min" placeholder="Precio mínimo">
+            <input type="number" step="0.01" name="max" placeholder="Precio máximo">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/porPrecioMayorPro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="number" step="0.01" name="precio" placeholder="Precio mayor a">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <form th:action="@{/busquedaPro/porTipoYPrecioPro}" method="post" class="search-form">
+        <div class="form-row">
+            <input type="text" name="tipo" placeholder="Tipo">
+            <input type="number" step="0.01" name="precioMin" placeholder="Precio mínimo">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+</div>
+
+<div class="buttons">
+    <a th:href="@{/busquedaPro/top5Pro}"><button type="button">Top 5 Precios</button></a>
+    <a th:href="@{/busquedaPro/sinImagenPro}"><button type="button">Productos sin imagen</button></a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th><th>Nombre</th><th>Tipo</th><th>Descripción</th>
+            <th>Precio</th><th>Foto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:if="${productos != null and #lists.isEmpty(productos)}">
+            <td colspan="6" class="no-results">No hay productos con esa búsqueda.</td>
+        </tr>
+        <tr th:each="p : ${productos}">
+            <td th:text="${p.idProducto}"></td>
+            <td th:text="${p.nombre}"></td>
+            <td th:text="${p.tipo}"></td>
+            <td th:text="${p.descripcion}"></td>
+            <td th:text="${p.precio != null ? '$' + p.precio : 'N/A'}"></td>
+            <td>
+            <img th:src="@{/productos/{foto}(foto=${p.nombreFoto})}" 
+         	alt="Imagen del producto" 
+         	width="100" height="100"
+         	style="border-radius: 8px; box-shadow: 0 0 5px #bfa0e0;"/>
+         	</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="margin-top: 20px;"> <a th:href="@{/home}"> <button type="submit">Inicio</button> </a> </div>
+<div style="margin-top: 20px;"> <a th:href="@{/producto/listadopro}"> <button type="submit">Lista de Productos</button> </a> </div>
+</body>
+<div th:replace="fragments/footer :: footer"></div>
+</html>

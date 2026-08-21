@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${empleado.idEmpleado == null} ? 'Nuevo Empleado' : 'Editar Empleado'">Empleado</title>
+       <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6f0;
+            color: #333;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #f5e8de;
+            padding: 20px;
+            border: 1px solid #8b5e3c;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #8b5e3c;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #8b5e3c;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #8b5e3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #6f482f; }
+        a { text-decoration: none; color: #8b5e3c; margin-left: 10px; }
+        /* === Estilo para los SELECT === */
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #b08968;         /* borde café suave */
+    border-radius: 6px;
+    background-color: #fffaf3;         /* beige muy claro */
+    color: #3e2723;                    /* texto café oscuro */
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    appearance: none;                  /* elimina estilo por defecto */
+    background-image: linear-gradient(45deg, transparent 50%, #8b5e3c 50%),
+                      linear-gradient(135deg, #8b5e3c 50%, transparent 50%);
+    background-position: calc(100% - 15px) calc(50% - 2px), calc(100% - 10px) calc(50% - 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    transition: all 0.3s ease;
+    cursor: pointer;
+	}
+	
+	/* Hover y focus */
+	select:hover {
+	    border-color: #8b5e3c;
+	    background-color: #fff3e0;
+	}
+	
+	select:focus {
+	    outline: none;
+	    border-color: #6d4c41;
+	    box-shadow: 0 0 5px rgba(139, 94, 60, 0.4);
+	}
+	
+	/* Opciones dentro del desplegable */
+	option {
+	    background-color: #fffaf3;
+	    color: #3e2723;
+	}
+        
+    </style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+    <h1 th:text="${empleado.idEmpleado == null} ? 'Nuevo Empleado' : 'Editar Empleado'"></h1>
+    <form th:action="@{${empleado.idEmpleado == null} ? '/empleado/guardar' : '/empleado/actualizar'}" th:object="${empleado}" method="post">
+        <input type="hidden" th:field="*{idEmpleado}" />
+        
+        <label>Nombre Completo</label>
+		<input type="text" th:field="*{nombreCompleto}" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+
+        <label>Puesto</label>
+        <select th:field="*{puesto}" required>
+            <option value="" disabled th:text="${empleado.puesto == null} ? 'Selecciona un puesto' : empleado.puesto" selected></option>
+            <option value="Cocinero" th:selected="${empleado.puesto == 'Cocinero'}">Cocinero</option>
+            <option value="Mesero" th:selected="${empleado.puesto == 'Mesero'}">Mesero</option>
+            <option value="Cajero" th:selected="${empleado.puesto == 'Cajero'}">Cajero</option>
+            <option value="Superviso" th:selected="${empleado.puesto == 'Supervisor'}">Supervisor</option>
+             <option value="Administrador" th:selected="${empleado.puesto == 'Administrador'}">Administrador</option>
+        </select>
+        
+        <label>Clave</label>
+		<input type="text" th:field="*{clave}"/>
+
+        <button type="submit">Guardar</button>
+        <a href="/empleado">Cancelar</a>
+    </form>
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

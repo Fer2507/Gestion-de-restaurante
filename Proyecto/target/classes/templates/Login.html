@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Iniciar Sesión</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #f5ebe0;
+        color: #4e342e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .login-container {
+        background-color: #fff8e1;
+        padding: 40px 50px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        text-align: center;
+        width: 320px;
+    }
+
+    h2 {
+        margin-bottom: 25px;
+        color: #6d4c41;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    input[type="text"], input[type="password"] {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #bcaaa4;
+        border-radius: 5px;
+        background-color: #fdf3e7;
+        color: #4e342e;
+        font-size: 14px;
+    }
+
+    input[type="submit"] {
+        background-color: #8d6e63;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+        width: 100%;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #6d4c41;
+    }
+
+    .error {
+        color: #c62828;
+        margin-top: 10px;
+    }
+
+    .footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #8d6e63;
+    }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="Usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <input type="submit" value="Entrar">
+    </form>
+
+    <p th:if="${param.error}" class="error">Usuario o contraseña incorrectos.</p>
+    <p th:if="${param.logout}" class="footer">Has cerrado sesión correctamente.</p>
+</div>
+
+</body>
+</html>

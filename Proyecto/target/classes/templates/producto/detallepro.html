@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Detalle de Producto</title>
+<style>
+    /* ======= ESTILOS GENERALES ======= */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fdf6f0; /* beige claro */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    /* ======= TARJETA DE DETALLE ======= */
+    .card {
+        background-color: #fff8f0;
+        border: 1px solid #a47148;
+        border-radius: 10px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: left;
+        width: 350px;
+    }
+
+    .card img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto 15px auto;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+        color: #8b5e3c;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .card h3 {
+        margin: 8px 0;
+        color: #4b2e05;
+    }
+
+    /* ======= BOTÓN ======= */
+    .card a button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        background-color: #a47148;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .card a button:hover {
+        background-color: #7b4f2c;
+    }
+</style>
+</head>
+<body>
+<div class="card">
+    <img th:src="@{'/productos/' + ${fotoProducto}}" alt="Foto Producto">
+    <h2 th:text="${nombreProducto}"></h2>
+    <h3 th:text="'Descripción: ' + ${descripcionProducto}"></h3>
+    <h3 th:text="'Precio: $' + ${precioProducto}"></h3>
+    <h3 th:text="'Tipo: ' + ${tipoProducto}"></h3>
+
+    <!-- BOTÓN DINÁMICO DE VOLVER -->
+	   <!-- BOTÓN DINÁMICO DE VOLVER -->
+	<div th:if="${from == 'lista'}">
+	    <a th:href="@{/producto/listadopro}">
+	        <button type="button">Volver a Lista</button>
+	    </a>
+	</div>
+	
+	<div th:if="${from == 'inicio'}">
+	    <a th:href="@{/}">
+	        <button type="button">Volver al Inicio</button>
+	    </a>
+	</div>
+
+
+</div>
+</body>
+</html>

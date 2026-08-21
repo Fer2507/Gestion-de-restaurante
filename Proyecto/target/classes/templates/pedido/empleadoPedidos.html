@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Empleados</title>
+
+<style>
+/* ======= CONTENEDOR PRINCIPAL ======= */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 25px;
+}
+
+/* ======= BODY Y TITULOS ======= */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fdf6f0; 
+    color: #333;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #8b5e3c; 
+    margin-bottom: 20px;
+}
+
+/* ======= TABLA ======= */
+.main-container > div:first-child {
+    flex: 3 1 0%;
+    min-width: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f5e8de;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #8b5e3c;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #c49b7c;
+    color: #fff;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8e9de;
+}
+
+tbody tr:hover {
+    background-color: #f2d9b5;
+}
+
+/* ======= BOTONES ======= */
+a.button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #8b5e3c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+a.button:hover {
+    background-color: #6f482f;
+}
+
+td a.delete {
+    background-color: #a52a2a;
+}
+
+td a.delete:hover {
+    background-color: #7f1f1f;
+}
+</style>
+
+</head>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<body>
+
+<h1>Lista de Pedidos del Empleado</h1>
+
+<div class="main-container">
+
+    <!-- TABLA -->
+    <!-- TABLA -->
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Reserva</th>
+                    <th>ID Pedido</th>
+                    <th>Cliente</th>
+                    <th>Empleado</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pedido : ${pedidos}">
+                    <td th:text="${pedido.reserva != null ? pedido.reserva.idReserva : 'Sin reserva'}"></td>
+                    <td th:text="${pedido.idpedido}"></td>
+                    <td th:text="${pedido.cliente.nombre}"></td>
+                    <td th:text="${pedido.atenciones != null && !pedido.atenciones.isEmpty() ? pedido.atenciones[0].empleado.nombreCompleto : 'No asignado'}"></td>
+                    <td th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${pedido.total != null ? '$' + pedido.total : 'N/A'}"></td>
+                    <td>
+                        <a th:href="@{/pedidos/detalles/{id}(id=${pedido.idpedido})}" class="button">Detalles</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<title>Acceso Denegado</title>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #f5ebe0;
+        color: #4e342e;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        background-color: #fff8e1;
+        padding: 40px 50px;
+        border-radius: 15px;
+        width: 450px;
+        margin: 80px auto;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+        color: #8d6e63;
+        margin-bottom: 15px;
+        font-size: 26px;
+    }
+
+    p {
+        color: #5d4037;
+        font-size: 15px;
+    }
+
+    .warning {
+        font-size: 45px;
+        color: #a1887f;
+        margin-bottom: 10px;
+    }
+
+    a.btn {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #8d6e63;
+        color: #fff;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+    }
+
+    a.btn:hover {
+        background-color: #6d4c41;
+    }
+
+    .access-box {
+        margin-top: 20px;
+        text-align: left;
+        font-size: 14px;
+        background: #fff3d6;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #d7ccc8;
+    }
+
+    .access-box h3 {
+        margin-top: 0;
+        color: #795548;
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+</style>
+
+</head>
+
+<body>
+
+<!-- Header dentro del body -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+
+    <div class="warning">⚠️</div>
+
+    <h1>Acceso Denegado</h1>
+    <p>No tienes permisos para acceder a esta página.</p>
+
+    <!-- Mostrar roles del usuario -->
+    <div class="access-box">
+    <h3>Tus roles actuales:</h3>
+
+    <p><strong>Roles detectados por el sistema:</strong>
+        <span sec:authentication="authorities"></span>
+    </p>
+</div>
+</body>
+<!-- Footer dentro del body -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

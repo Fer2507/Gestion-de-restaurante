@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Clientes</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #e6f0fa;
+        padding-top: 40px;
+        color: #1a1a1a;
+    }
+
+    h1 {
+        color: #1a3d7c; 
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+
+    .cliente-detalle {
+        background-color: #d7e4f7;
+        display: inline-block;
+        padding: 25px 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        text-align: left;
+        min-width: 300px;
+    }
+
+    .cliente-detalle h3 {
+        margin: 10px 0;
+        color: #1a3d7c; 
+        font-style: italic;
+    }
+</style>
+</head>
+<body>
+    <h1>Bienvenidos Clientes</h1>
+
+    <div class="cliente-detalle">
+        <h3 th:text="'Nombre del Cliente: ' + ${nom}"></h3>
+        <h3 th:text="'Crédito Disponible: ' + ${credito}"></h3>
+        <h3 th:text="'A la fecha de: ' + ${fecha}"></h3>
+        <h3 th:text="'Vigente: ' + ${vigente}"></h3>
+    </div>
+    <div style="margin-top: 20px;">
+        <a th:href="@{/home}"><button type="submit">Volver</button></a>
+    </div>
+</body>
+<div th:replace="fragments/footer :: footer"></div>
+</html>

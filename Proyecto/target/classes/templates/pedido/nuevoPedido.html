@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Nuevo Pedido</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #fdf6f0; color: #333; padding: 20px; }
+        h2 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 60%; margin: 0 auto; background-color: #f5e8de;
+            padding: 20px; border: 1px solid #8b5e3c; border-radius: 8px;
+        }
+        label { display: block; margin-top: 10px; color: #8b5e3c; }
+        select, input[type="number"], input[type="text"] {
+            width: 100%; padding: 8px; margin-top: 5px;
+            border: 1px solid #8b5e3c; border-radius: 4px;
+        }
+        button { margin-top: 15px; padding: 8px 16px; background-color: #8b5e3c; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #6f482f; }
+        .total { margin-top: 10px; font-weight: bold; color: #6f482f; }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h2>Crear Pedido sin Reserva</h2>
+
+    <form th:action="@{/pedidos/guardar}" method="post" th:object="${pedido}">
+        
+        <!-- ID RESERVA (siempre null o 0) -->
+        <input type="hidden" name="reserva.idReserva" value="0" />
+        <p style="color: #777; font-style: italic;">Este pedido no está asociado a ninguna reserva.</p>
+
+        <!-- Empleado -->
+		<label>Empleado que atiende:</label>
+		
+		<!-- SI ES ADMIN O SUPERVISOR: mostrar select -->
+		<div th:if="${empleados != null}">
+		    <select id="empleadoSelect" class="form-control">
+		        <option value="">-- Selecciona un empleado --</option>
+		        <option th:each="e : ${empleados}"
+		                th:value="${e.idEmpleado}"
+		                th:text="${e.nombreCompleto}">
+		        </option>
+		    </select>
+		    <input type="hidden" id="idEmpleadoHidden" name="idEmpleado">
+		</div>
+		
+		<!-- SI ES EMPLEADO NORMAL: mostrar nombre fijo -->
+		<div th:if="${empleado != null}">
+		    <input type="text" class="form-control"
+		           th:value="${empleado.nombreCompleto}"
+		           readonly>
+		    <input type="hidden" name="idEmpleado"
+		           th:value="${empleado.idEmpleado}">
+		</div>
+		
+        <!-- Cliente -->
+        <label>Cliente:</label>
+        <select th:field="*{cliente.id}" required>
+            <option value=""> --Selecciona un cliente-- </option>
+            <option th:each="c : ${clientes}" 
+            th:value="${c.id}" 
+            th:text="${c.nombre}"></option>
+        </select>
+
+        <!-- Productos -->
+        <label>Producto:</label>
+        <select id="producto">
+            <option value="">-- Seleccione Producto --</option>
+            <option th:each="p : ${productos}" th:value="${p.idProducto}"
+                    th:text="${p.nombre}" th:attr="data-precio=${p.precio}"></option>
+        </select>
+
+        <label>Cantidad:</label>
+        <input type="number" id="cantidad" min="1" value="1">
+        <button type="button" onclick="agregarProducto()">Agregar Producto</button>
+
+        <h3>Productos Agregados</h3>
+        <table>
+            <thead>
+                <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th><th>Eliminar</th></tr>
+            </thead>
+            <tbody id="listaProductos"></tbody>
+        </table>
+
+        <div class="total">Total: $<span id="total">0.00</span></div>
+
+        <button type="submit">Guardar Pedido</button>
+        <a th:href="@{/pedidos/lista}"><button type="button">Cancelar</button></a>
+    </form>
+</div>
+
+<script>
+let productos = [];
+const empleadoSelect = document.getElementById('empleadoSelect');
+const idEmpleadoHidden = document.getElementById('idEmpleadoHidden');
+
+empleadoSelect.addEventListener('change', () => { idEmpleadoHidden.value = empleadoSelect.value; });
+
+function agregarProducto() {
+    const select = document.getElementById("producto");
+    const cantidad = parseInt(document.getElementById("cantidad").value);
+    const idProducto = select.value;
+    const nombreProducto = select.options[select.selectedIndex].text;
+    const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
+
+    if(idProducto && cantidad > 0){
+        productos.push({id:idProducto, nombre:nombreProducto, cantidad:cantidad, precio:precio});
+        mostrarProductos();
+        document.getElementById("cantidad").value = 1;
+    }
+}
+
+function mostrarProductos() {
+    const lista = document.getElementById("listaProductos");
+    lista.innerHTML = '';
+    productos.forEach((p, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${p.nombre}</td>
+            <td><input type="number" value="${p.cantidad}" min="1" onchange="actualizarCantidad(${index}, this)"></td>
+            <td>$${p.precio.toFixed(2)}</td>
+            <td>$<span id="subtotal-${index}">${(p.precio*p.cantidad).toFixed(2)}</span></td>
+            <td><button type="button" onclick="eliminarProducto(${index})">X</button></td>
+        `;
+        const inputId = document.createElement("input"); inputId.type="hidden"; inputId.name=`detalles[${index}].producto.idProducto`; inputId.value=p.id;
+        const inputCant = document.createElement("input"); inputCant.type="hidden"; inputCant.name=`detalles[${index}].cantidad`; inputCant.value=p.cantidad;
+        const inputPrecio = document.createElement("input"); inputPrecio.type="hidden"; inputPrecio.name=`detalles[${index}].precioUnitario`; inputPrecio.value=p.precio;
+        const inputSubtotal = document.createElement("input"); inputSubtotal.type="hidden"; inputSubtotal.name=`detalles[${index}].subtotal`; inputSubtotal.value=(p.cantidad*p.precio).toFixed(2);
+        tr.append(inputId, inputCant, inputPrecio, inputSubtotal);
+        lista.appendChild(tr);
+    });
+    calcularTotal();
+}
+
+function eliminarProducto(index){ productos.splice(index,1); mostrarProductos(); }
+function actualizarCantidad(index,input){ productos[index].cantidad = parseInt(input.value); mostrarProductos(); }
+function calcularTotal(){ let total=0; productos.forEach(p=>total+=p.precio*p.cantidad); document.getElementById("total").innerText=total.toFixed(2); }
+</script>
+</body>
+</html>

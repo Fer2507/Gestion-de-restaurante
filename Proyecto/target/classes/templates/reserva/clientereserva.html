@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Reservas</title>
+<style>
+/* ======= CONTENEDOR PRINCIPAL ======= */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 25px;
+}
+
+/* ======= BODY Y TITULOS ======= */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fdf6f0;
+    color: #333;
+    padding: 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #8b5e3c;
+    margin-bottom: 20px;
+}
+
+/* ======= TABLAS ======= */
+.main-container > div:first-child {
+    flex: 3 1 0%;
+    min-width: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f5e8de;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #8b5e3c;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #c49b7c;
+    color: #fff;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) { background-color: #f8e9de; }
+tbody tr:hover { background-color: #f2d9b5; }
+
+/* ======= BOTONES ======= */
+a.button, button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #8b5e3c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+a.button:hover, button:hover { background-color: #6f482f; }
+</style>
+</head>
+<!-- Header -->
+<div th:replace="fragments/header :: header"></div>
+<body>
+<div class="container mt-4">
+    <h2>Mis Reservas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mesa</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estatus</th>
+                    <th>Pedidos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${confirmadas}">
+                    <td th:text="${r.idReserva}"></td>
+                    <td th:text="${r.mesa.idMesa}"></td>
+                    <td th:text="${r.cliente.nombre}"></td>
+                    <td th:text="${#temporals.format(r.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${r.estatus}"></td>
+                    <td>
+                        <ul>
+                            <li th:each="p : ${r.pedidos}" th:text="${'Pedido #' + p.idpedido }"></li>
+                        </ul>
+                    </td>
+                    <td>
+                        <a th:href="@{/reserva/detalle/{id}(id=${r.idReserva})}" class="button">Detalles</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+</body>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</html>

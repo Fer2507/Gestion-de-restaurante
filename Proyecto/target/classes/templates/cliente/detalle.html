@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Detalle del Cliente</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #fdf6f0; /* fondo café claro */
+        padding-top: 40px;
+        color: #4b2e1a;
+    }
+
+    .cliente-detalle {
+        background-color: #f5e8de; /* beige cálido */
+        display: inline-block;
+        padding: 25px 45px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        border: 2px solid #c49b7c;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cliente-detalle:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    .cliente-detalle img {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        object-fit: cover;
+        border: 3px solid #8b5e3c;
+        background-color: #fff;
+    }
+
+    h3 {
+        margin: 8px 0;
+        color: #6f4e37; /* café oscuro */
+        font-style: italic;
+    }
+
+    /* Botón volver */
+    button {
+        background-color: #8b5e3c;
+        color: #fffaf3;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+        background-color: #6f482f;
+        transform: scale(1.05);
+    }
+
+    /* Animación sutil al entrar */
+    .cliente-detalle {
+        animation: aparecer 0.5s ease-in-out;
+    }
+
+    @keyframes aparecer {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<div class="cliente-detalle">
+    <!-- Foto del cliente -->
+    <img th:src="@{'/imagen/cliente/' + ${fotocliente}}" alt="Foto del cliente">
+
+    <!-- Nombre y Apellidos -->
+    <h3 th:text="'Nombre: ' + ${nombre} + ' ' + ${apellidos}"></h3>
+
+    <!-- Email -->
+    <h3 th:text="'Email: ' + ${email}"></h3>
+    
+    <!-- Contraseña -->
+    <h3 th:text="'Clave: ' + ${clave}"></h3>
+
+    <!-- Crédito -->
+    <h3 th:text="'Crédito disponible: $' + ${credito}"></h3>
+
+    <!-- Teléfono -->
+    <h3 th:text="'Teléfono: ' + ${telefono}"></h3>
+
+    <!-- Destacado -->
+    <h3 th:text="'Destacado: ' + (${destacado} == 1 ? 'Sí' : 'No')"></h3>
+
+    <!-- Botón volver -->
+    <a th:href="@{/clientes/listadocli}">
+        <button type="button">Volver</button>
+    </a>
+</div>
+
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

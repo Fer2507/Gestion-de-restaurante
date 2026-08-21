@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Alta de Producto</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fdf6f0;
+        color: #333;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #8b5e3c;
+        margin-bottom: 20px;
+    }
+
+    form {
+        width: 50%;
+        margin: 0 auto;
+        background-color: #f5e8de;
+        padding: 25px;
+        border: 1px solid #8b5e3c;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+        display: block;
+        margin-top: 12px;
+        color: #8b5e3c;
+        font-weight: bold;
+    }
+
+    input[type="text"], input[type="number"], select {
+        width: 100%;
+        padding: 8px 10px;
+        margin-top: 5px;
+        border: 1px solid #b08968;
+        border-radius: 6px;
+        background-color: #fffaf3;
+        color: #3e2723;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    /* --- Estilo select --- */
+    select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, #8b5e3c 50%),
+                          linear-gradient(135deg, #8b5e3c 50%, transparent 50%);
+        background-position: calc(100% - 15px) calc(50% - 2px),
+                             calc(100% - 10px) calc(50% - 2px);
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
+
+    select:hover {
+        border-color: #8b5e3c;
+        background-color: #fff3e0;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #6d4c41;
+        box-shadow: 0 0 5px rgba(139, 94, 60, 0.4);
+    }
+
+    option {
+        background-color: #fffaf3;
+        color: #3e2723;
+    }
+
+    .preview {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .preview img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid #8b5e3c;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 10px 18px;
+        background-color: #8b5e3c;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+        background-color: #6f482f;
+        transform: scale(1.05);
+    }
+
+    a { text-decoration: none; }
+</style>
+</head>
+<body>
+
+    <h2 th:text="${producto.idProducto} != null ? 'Editar Producto' : 'Dar de alta producto'"></h2>
+
+    <form th:action="@{/producto/guardar}" th:object="${producto}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{idProducto}" />
+
+        <label>Nombre:</label>
+        <input type="text" th:field="*{nombre}" required>
+
+        <label>Descripción:</label>
+        <input type="text" th:field="*{descripcion}" required>
+
+        <label>Tipo:</label>
+        <select th:field="*{tipo}" required>
+            <option value="">Seleccione un tipo</option>
+            <option value="Platillo">Platillo</option>
+            <option value="Bebida">Bebida</option>
+            <option value="Postre">Postre</option>
+        </select>
+
+        <label>Precio:</label>
+        <input type="number" th:field="*{precio}" step="0.01" min="0" required>
+
+        <label>Imagen:</label>
+        <input type="file" name="foto" accept="image/*">
+
+        <div class="preview" th:if="*{nombreFoto} != null">
+            <p>Imagen actual:</p>
+            <img th:src="@{'/productos/' + ${producto.nombreFoto}}" alt="Imagen del producto"/>
+        </div>
+
+        <div class="button-group">
+            <a th:href="@{/producto/listadopro}">
+                <button type="button">Cancelar</button>
+            </a>
+            <button type="submit">Guardar Producto</button>
+        </div>
+    </form>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

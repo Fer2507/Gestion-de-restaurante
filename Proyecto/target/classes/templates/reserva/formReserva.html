@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${reserva.idReserva == null} ? 'Nueva Reserva' : 'Editar Reserva'">Reserva</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6f0;
+            color: #333;
+            padding: 20px;
+        }
+        h2 { text-align: center; color: #8b5e3c; }
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #f5e8de;
+            padding: 20px;
+            border: 1px solid #8b5e3c;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #8b5e3c;
+        }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #8b5e3c;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #8b5e3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #6f482f; }
+        a { text-decoration: none; color: #8b5e3c; margin-left: 10px; }
+        
+        /* ======= PANEL DERECHO (ACCIONES Y BÚSQUEDA) ======= */
+.search-container {
+    flex: 1 1;
+    background-color: #f5e8de;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: fit-content;
+}
+
+.search-container h2 {
+    text-align: center;
+    color: #6f4e37;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.search-form input, .search-form select {
+    padding: 6px;
+    border: 1px solid #c4a484;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.search-form button {
+    background-color: #a47148;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-form button:hover {
+    background-color: #7b4f2c;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 900px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .main-container > div:first-child,
+    .search-container {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .search-container {
+        order: -1;
+        margin-bottom: 20px;
+    }
+}
+    </style>
+</head>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+<body>
+<div class="container">
+    <h2 th:text="${reserva.idReserva == null} ? 'Nueva Reserva' : 'Editar Reserva'"></h2>
+
+    <form id="formReserva"
+          th:action="@{${reserva.idReserva == null} ? '/reserva/guardar' : '/reserva/actualizar'}" 
+          th:object="${reserva}" method="post">
+
+        <input type="hidden" th:field="*{idReserva}" />
+
+       <!-- Cliente -->
+		<div th:if="${clienteLogueado != null}">
+		    <label>Cliente:</label>
+		    <input type="text" class="form-control" th:value="${clienteLogueado.nombre}" readonly>
+		    <input type="hidden" name="idCliente" th:value="${clienteLogueado.id}">
+		</div>
+		
+		<div th:if="${clienteLogueado == null}">
+		    <label>Cliente:</label>
+		    <select class="form-control" name="idCliente" required>
+		        <option value="" disabled selected>-- Seleccione Cliente --</option>
+		        <option th:each="c : ${clientes}" 
+		                th:value="${c.id}" 
+		                th:text="${c.nombre}"></option>
+		    </select>
+		</div>
+
+		<!-- Mesa -->
+		<select th:field="*{mesa.idMesa}" required>
+		    <option value="" disabled th:text="'Selecciona una mesa'"></option>
+		    <option th:each="m : ${mesas}" th:value="${m.idMesa}"
+		            th:text="'Mesa ' + ${m.idMesa} + ' (' + ${m.capacidad} + ' personas) - ' + ${m.ubicacion}"
+		            th:selected="${reserva.mesa != null} ? ${m.idMesa} == ${reserva.mesa.idMesa} : false">
+		    </option>
+		</select>
+
+        <!-- Fecha actual -->
+        <label>Fecha actual de la reserva:</label>
+        <p id="fechaActual"
+           th:text="${reserva.fechaHora != null} ? ${#temporals.format(reserva.fechaHora, 'dd/MM/yyyy HH:mm')} : 'No asignada'"></p>
+
+        <!-- Nueva fecha -->
+        <label>Modificar Fecha y Hora:</label>
+        <input type="datetime-local" id="nuevaFecha" th:field="*{fechaHora}" required>
+
+        <!-- Estatus (oculto, siempre será Pendiente) -->
+        <input type="hidden" th:field="*{estatus}" value="Pendiente">
+
+        <button type="submit" th:text="${reserva.idReserva == null} ? 'Guardar' : 'Actualizar'"></button>
+        <a th:href="@{/reserva/lista}"><button type="button">Cancelar</button></a>
+    </form>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error != null}" style="color:red; margin-top:15px;" th:text="${error}"></div>
+</div>
+
+<script>
+document.getElementById("formReserva").addEventListener("submit", function(event) {
+    const idReserva = document.querySelector("input[name='idReserva']").value;
+    if (idReserva) { // solo preguntar si está editando
+        const cambiar = confirm("¿Deseas cambiar la fecha y hora de la reserva?");
+        if (!cambiar) {
+            // Si el usuario NO desea cambiar, restauramos la fecha original
+            const fechaActualTexto = document.getElementById("fechaActual").textContent.trim();
+            if (fechaActualTexto !== "No asignada") {
+                // Convertir el texto "dd/MM/yyyy HH:mm" a formato ISO para el input datetime-local
+                const partes = fechaActualTexto.split(" ");
+                const [dia, mes, anio] = partes[0].split("/");
+                const [hora, minuto] = partes[1].split(":");
+                const fechaISO = `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}T${hora.padStart(2,'0')}:${minuto.padStart(2,'0')}`;
+                document.getElementById("nuevaFecha").value = fechaISO;
+            }
+        }
+    }
+});
+</script>
+
+    <!-- PANEL DERECHO -->
+    <div class="search-container">
+        <!-- Capacidad de mesa -->
+        <form th:action="@{/buscar/mesa/capacidad}" method="post" class="search-form">
+            <label> Buscar Capacidad de mesa:</label>
+            <input type="number" name="capacidad" min="1" required>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+</body>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>
